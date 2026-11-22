@@ -1,6 +1,3 @@
--- Clinic agent schema (Postgres 16+ with pgvector).
--- Apply with: psql "$DATABASE_URL" -f db/schema.sql
-
 CREATE EXTENSION IF NOT EXISTS vector;
 
 -- Services the clinic offers (GP consult, vaccination, health screening, ...).
@@ -64,6 +61,14 @@ CREATE TABLE conversations (
                     CHECK (status IN ('open', 'handed_off', 'closed')),
     started_at      timestamptz NOT NULL DEFAULT now(),
     last_message_at timestamptz NOT NULL DEFAULT now()
+);
+
+CREATE TABLE messages (
+    id              bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    conversation_id bigint      NOT NULL REFERENCES conversations (id) ON DELETE CASCADE,
+    role            text        NOT NULL CHECK (role IN ('user', 'assistant', 'tool')),
+    content         text        NOT NULL,
+    created_at      timestamptz NOT NULL DEFAULT now()
 );
 
 CREATE INDEX conversations_channel_external_idx ON conversations (channel, external_id);
