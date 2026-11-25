@@ -11,6 +11,7 @@ dependencies = [
     "fastapi[standard]>=0.165.0",
     "psycopg[binary]>=3.3.9",
     "python-dotenv>=1.2.4",
+    "pyyaml>=6.0.4",
 ]
 
 [project.scripts]
