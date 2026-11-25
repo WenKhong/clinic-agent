@@ -24,13 +24,17 @@ WEEKDAYS = {"mon": 1, "tue": 2, "wed": 3, "thu": 4, "fri": 5, "sat": 6, "sun": 7
 FAQ_SOURCE_PREFIX = "clinic.yaml#"
 FAQ_LANGUAGE = "en"
 
+# The embedding is made from name + description; name is the conflict key so
+# it can't change here, but if the description changed, clear the embedding.
 UPSERT_SERVICE = """
     INSERT INTO services (name, description, duration_minutes, price_myr)
     VALUES (%s, %s, %s, %s)
     ON CONFLICT (name) DO UPDATE SET
         description      = EXCLUDED.description,
         duration_minutes = EXCLUDED.duration_minutes,
-        price_myr        = EXCLUDED.price_myr
+        price_myr        = EXCLUDED.price_myr,
+        embedding        = CASE WHEN services.description IS NOT DISTINCT FROM EXCLUDED.description
+                                THEN services.embedding END
 """
 
 UPSERT_DOCTOR = """

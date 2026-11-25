@@ -8,6 +8,7 @@ CREATE TABLE services (
     duration_minutes integer       NOT NULL CHECK (duration_minutes > 0),
     price_myr        numeric(8, 2) CHECK (price_myr >= 0),
     is_active        boolean       NOT NULL DEFAULT true,
+    embedding        vector(1536),                    -- name + description; NULL until embedded
     created_at       timestamptz   NOT NULL DEFAULT now()
 );
 

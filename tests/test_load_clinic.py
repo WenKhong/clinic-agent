@@ -124,6 +124,35 @@ def test_faq_embedding_cleared_only_when_text_changes():
         conn.rollback()
 
 
+def test_service_embedding_cleared_only_when_description_changes():
+    data = read_clinic_yaml(DEFAULT_PATH)
+    name = data["services"][0]["name"]
+    fake_embedding = "[" + ",".join(["0.1"] * 1536) + "]"
+
+    def embedding_is_null(conn) -> bool:
+        return conn.execute(
+            "SELECT embedding IS NULL FROM services WHERE name = %s", (name,)
+        ).fetchone()[0]
+
+    with get_conn() as conn:
+        load_clinic(conn, data)
+        conn.execute(
+            "UPDATE services SET embedding = %s::vector WHERE name = %s",
+            (fake_embedding, name),
+        )
+
+        changed = copy.deepcopy(data)
+        changed["services"][0]["price_myr"] = 99.00
+        load_clinic(conn, changed)  # price changed, description same: kept
+        assert not embedding_is_null(conn)
+
+        changed["services"][0]["description"] += " (updated)"
+        load_clinic(conn, changed)  # description changed: cleared
+        assert embedding_is_null(conn)
+
+        conn.rollback()
+
+
 @pytest.mark.parametrize(
     ("old", "new", "error"),
     [
