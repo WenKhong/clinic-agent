@@ -46,10 +46,14 @@ def document_text(title: str | None, text: str) -> str:
     """Format a document for gemini-embedding-2.
 
     This model has no task_type setting; the task goes in the text instead.
-    Search queries will need the matching "task: search result | query: ..."
-    form when we add retrieval.
+    Search queries use the matching query_text() form below.
     """
     return f"title: {title or 'none'} | text: {text}"
+
+
+def query_text(query: str) -> str:
+    """Format a search query for gemini-embedding-2 (pairs with document_text)."""
+    return f"task: search result | query: {query}"
 
 
 def gemini_embedder(api_key: str) -> Embedder:
