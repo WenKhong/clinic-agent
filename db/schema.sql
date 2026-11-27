@@ -26,9 +26,11 @@ CREATE TABLE faq_chunks (
     UNIQUE (source, language)   -- lets the data loader upsert by source
 );
 
--- Vector (semantic) and keyword indexes, for hybrid search.
-CREATE INDEX faq_chunks_embedding_idx ON faq_chunks
-    USING hnsw (embedding vector_cosine_ops);
+-- Keyword index, for keyword and hybrid search.
+-- No vector index on purpose: with a few dozen FAQ chunks an exact scan is
+-- fast and always correct, while an approximate HNSW index returned too few
+-- rows here (many duplicate vectors from rolled-back test rows). Add
+-- `USING hnsw (embedding vector_cosine_ops)` once there are many thousands of chunks.
 CREATE INDEX faq_chunks_content_tsv_idx ON faq_chunks USING gin (content_tsv);
 
 CREATE TABLE doctors (

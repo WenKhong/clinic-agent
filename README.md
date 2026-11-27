@@ -22,7 +22,7 @@ How `POST /ask` works today:
 
 1. **Emergency check.** If the question contains an emergency phrase, return the fixed emergency text and stop ([app/safety.py](app/safety.py)).
 2. **Embed the question** with `gemini-embedding-2` (1536 dimensions), the same model used for the FAQ chunks ([app/embed.py](app/embed.py)).
-3. **Retrieve the top 5 chunks** by cosine distance (pgvector `<=>`, HNSW index) ([app/search.py](app/search.py)).
+3. **Retrieve the top 5 chunks** by cosine distance (pgvector `<=>`, exact scan) ([app/search.py](app/search.py)).
 4. **Draft an answer.** `gemini-3.8-flash` answers from those 5 chunks only and returns JSON: `answered`, `answer`, `cited_ids` ([app/ask.py](app/ask.py), [app/prompts.py](app/prompts.py)).
 5. **Check and reply.** Code keeps only citations of retrieved chunks, then returns `answered`, `no_answer` or `emergency`.
 
@@ -31,6 +31,7 @@ How `POST /ask` works today:
 - **No similarity-score cutoff → scores don't separate right from wrong on this FAQ.** In testing, a correct answer scored 0.663 while a wrong one scored 0.69. The model's `answered` flag plus the citation check decide relevance instead.
 - **Citations checked in code, not trusted → the model can't cite a chunk it never saw.** If no valid citation is left, the reply is the fixed "don't know" text.
 - **Emergency check before anything else → missing an emergency is the worst failure.** It doesn't depend on retrieval quality or the LLM.
+- **No vector index → exact results at this size.** With a few dozen FAQ chunks an exact scan is fast; an approximate HNSW index sometimes returned too few rows in tests.
 - **Embedder and LLM are injected → tests never call Gemini.** `search()` and `ask()` take them as arguments, and the API gets them through FastAPI dependencies that tests override with fakes.
 
 ## Tech stack
@@ -105,7 +106,7 @@ The tests cover the data loader, embedding batches, search ranking, every `POST 
 
 Hybrid didn't help on this set: keyword search counts common words like "my" and "for", so on "I need a sick note for my boss" and "What medicine should I take for my fever?" unrelated chunks pushed the right one out of the top 3. `POST /ask` uses vector search.
 
-Scores can shift by one question between runs (one earlier run gave vector 19/20), so treat small gaps with care. To run it (one Gemini embedding call per question):
+Two runs with exact search gave the same numbers. One earlier run, made while an HNSW index was in place, gave vector 19/20. With 20 questions, one question is 5 points, so treat small gaps with care. To run it (one Gemini embedding call per question):
 
 ```bash
 uv run python -m evals.run_retrieval            # hit@3, breakdown by language, disagreements

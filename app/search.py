@@ -23,9 +23,10 @@ from app.db import get_conn  # importing app.db also loads .env into os.environ
 from app.embed import Embedder, _vector_literal, embed_all, gemini_embedder, query_text
 
 # <=> is pgvector's cosine distance: 0 = same direction, up to 2 = opposite.
-# We ORDER BY the raw distance, not by score, so Postgres can use the HNSW
-# index (faq_chunks_embedding_idx, built with vector_cosine_ops). Paste this
-# into psql (with a vector in place of %(q)s) to debug retrieval.
+# There is no vector index (see db/schema.sql), so this is an exact scan. We
+# still ORDER BY the raw distance, not by score, so an HNSW index added later
+# would be used. Paste this into psql (with a vector in place of %(q)s) to
+# debug retrieval.
 SEARCH_SQL = """
     SELECT id, source, content,
            1 - (embedding <=> %(q)s::vector) AS score
