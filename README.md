@@ -97,16 +97,26 @@ The tests cover the data loader, embedding batches, search ranking, every `POST 
 
 ## Evaluation
 
-| Metric | Vector-only | Hybrid (vector + keyword) |
+20 questions in [evals/retrieval.yaml](evals/retrieval.yaml) (11 English, 5 Malay, 2 Manglish, 2 Chinese), each listing the FAQ entry that answers it. A hit means that entry is in the top 3 results.
+
+| Metric | Vector-only | Hybrid (vector + keyword, RRF) |
 |---|---|---|
-| hit@3 | TBD (Day 65) | TBD (Day 65) |
+| hit@3 | 20/20 (100%) | 18/20 (90%) |
+
+Hybrid didn't help on this set: keyword search counts common words like "my" and "for", so on "I need a sick note for my boss" and "What medicine should I take for my fever?" unrelated chunks pushed the right one out of the top 3. `POST /ask` uses vector search.
+
+Scores can shift by one question between runs (one earlier run gave vector 19/20), so treat small gaps with care. To run it (one Gemini embedding call per question):
+
+```bash
+uv run python -m evals.run_retrieval            # hit@3, breakdown by language, disagreements
+uv run python -m evals.run_retrieval --show 4   # top 3 of both methods for question 4
+```
 
 ## Roadmap
 
 From [SPEC.md](SPEC.md). Not built yet:
 
-- [ ] Hybrid search (keyword + vector; the `content_tsv` index already exists)
-- [ ] Retrieval eval set and the scores above
+- [ ] Keyword search that ignores common words, then rerun the hybrid comparison
 - [ ] Tool-using agent loop
 - [ ] Booking: slots, holds, reschedule, cancel, waitlist
 - [ ] Full safety layer: keyword tiers in 3 languages, LLM safety screen, output guard
