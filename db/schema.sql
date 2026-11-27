@@ -8,6 +8,7 @@ CREATE TABLE services (
     duration_minutes integer       NOT NULL CHECK (duration_minutes > 0),
     price_myr        numeric(8, 2) CHECK (price_myr >= 0),
     is_active        boolean       NOT NULL DEFAULT true,
+    embedding        vector(1536),                    -- name + description; NULL until embedded
     created_at       timestamptz   NOT NULL DEFAULT now()
 );
 
@@ -21,21 +22,35 @@ CREATE TABLE faq_chunks (
     content     text        NOT NULL,
     embedding   vector(1536),                      -- NULL until embedded
     content_tsv tsvector GENERATED ALWAYS AS (to_tsvector('simple', content)) STORED,
-    created_at  timestamptz NOT NULL DEFAULT now()
+    created_at  timestamptz NOT NULL DEFAULT now(),
+    UNIQUE (source, language)   -- lets the data loader upsert by source
 );
 
--- Vector (semantic) and keyword indexes, for hybrid search.
-CREATE INDEX faq_chunks_embedding_idx ON faq_chunks
-    USING hnsw (embedding vector_cosine_ops);
+-- Keyword index, for keyword and hybrid search.
+-- No vector index on purpose: with a few dozen FAQ chunks an exact scan is
+-- fast and always correct, while an approximate HNSW index returned too few
+-- rows here (many duplicate vectors from rolled-back test rows). Add
+-- `USING hnsw (embedding vector_cosine_ops)` once there are many thousands of chunks.
 CREATE INDEX faq_chunks_content_tsv_idx ON faq_chunks USING gin (content_tsv);
 
 CREATE TABLE doctors (
     id         bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    full_name  text        NOT NULL,
+    full_name  text        NOT NULL UNIQUE,
     specialty  text        NOT NULL DEFAULT 'General Practice',
     languages  text[]      NOT NULL DEFAULT '{en}',
     is_active  boolean     NOT NULL DEFAULT true,
     created_at timestamptz NOT NULL DEFAULT now()
+);
+
+-- Weekly opening hours. One row per open session; gaps between sessions are
+-- breaks, and a weekday with no rows is closed.
+CREATE TABLE opening_hours (
+    id        bigint   GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    weekday   smallint NOT NULL CHECK (weekday BETWEEN 1 AND 7),  -- ISO: 1 = Mon, 7 = Sun
+    opens_at  time     NOT NULL,
+    closes_at time     NOT NULL,
+    CHECK (closes_at > opens_at),
+    UNIQUE (weekday, opens_at)
 );
 
 -- Bookable time slots, one row per doctor per time window.

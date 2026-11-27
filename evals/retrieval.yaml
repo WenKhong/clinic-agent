@@ -1,0 +1,137 @@
+# Retrieval eval set: does the right FAQ chunk come back in the top k?
+#
+# Each case is a patient question and the FAQ id(s) that answer it. `expected`
+# ids are the `id` values in data/clinic.yaml `faqs:`; the chunk source is
+# "clinic.yaml#<id>". A case is a hit@k if ANY expected id is in the top k.
+# `tests` says what the question is meant to probe.
+#
+# Questions are written in patients' words, not copied from the FAQ, so a
+# simple word match can't pass them all. Made-up clinic (Klinik Contoh) only;
+# no real names, phone numbers or patient data (PDPA).
+#
+# 20 cases: 11 English, 5 Malay, 2 Manglish, 2 Chinese.
+
+cases:
+  # --- English ---
+  - id: en-fees
+    lang: en
+    question: "How much do I pay to see the doctor?"
+    expected: [fees]
+    tests: paraphrase (no shared words with "consultation cost")
+
+  - id: en-payment-duitnow
+    lang: en
+    question: "Can I pay with DuitNow?"
+    expected: [payment-methods]
+    tests: exact keyword
+
+  - id: en-hari-raya
+    lang: en
+    question: "Are you open on Hari Raya?"
+    expected: [public-holidays, opening-hours]
+    tests: local holiday name, not the words "public holiday"
+
+  - id: en-sick-note
+    lang: en
+    question: "I need a sick note for my boss"
+    expected: [medical-certificate]
+    tests: '"sick note" vs "MC" / "medical certificate"'
+
+  - id: en-traffic-late
+    lang: en
+    question: "Stuck in traffic, I'll be 15 minutes behind my slot"
+    expected: [running-late]
+    tests: paraphrase
+
+  - id: en-company-cover
+    lang: en
+    question: "Does my company cover the visit?"
+    expected: [panels]
+    tests: '"company cover" vs "panel"'
+
+  - id: en-bring-ic
+    lang: en
+    question: "Do I need to bring my IC?"
+    expected: [what-to-bring]
+    tests: '"IC" vs "MyKad"'
+
+  - id: en-fasting-blood-test
+    lang: en
+    question: "Do I need to fast before my blood test?"
+    expected: [test-preparation]
+    tests: paraphrase
+
+  - id: en-wheelchair-ramp
+    lang: en
+    question: "Is there a ramp for my mum's wheelchair?"
+    expected: [accessibility]
+    tests: shared keyword ("wheelchair") plus paraphrase
+
+  - id: en-book-for-son
+    lang: en
+    question: "Can I make an appointment for my 10-year-old son?"
+    expected: [booking-for-others]
+    tests: '"son" vs "child or family member"'
+
+  - id: en-medicine-for-fever
+    lang: en
+    question: "What medicine should I take for my fever?"
+    expected: [medical-advice]
+    tests: medical-advice bait must find the "we can't advise" chunk
+
+  # --- Malay ---
+  - id: ms-saturday-hours
+    lang: ms
+    question: "Klinik buka pukul berapa hari Sabtu?"
+    expected: [opening-hours]
+    tests: cross-language (FAQ is English)
+
+  - id: ms-change-appointment
+    lang: ms
+    question: "Boleh saya tukar tarikh temujanji saya?"
+    expected: [reschedule-cancel]
+    tests: cross-language
+
+  - id: ms-parking
+    lang: ms
+    question: "Ada tempat letak kereta dekat klinik?"
+    expected: [parking]
+    tests: cross-language
+
+  - id: ms-flu-vaccine
+    lang: ms
+    question: "Ada stok vaksin influenza tak?"
+    expected: [vaccine-stock]
+    tests: cross-language, colloquial "tak"
+
+  - id: ms-personal-data
+    lang: ms
+    question: "Klinik simpan maklumat peribadi saya untuk apa?"
+    expected: [personal-data]
+    tests: cross-language
+
+  # --- Manglish ---
+  - id: manglish-walk-in
+    lang: manglish
+    question: "Boss, can just walk in one ah or must book first?"
+    expected: [walk-ins]
+    tests: Manglish particles; "book" also pulls how-to-book
+
+  - id: manglish-repeat-medicine
+    lang: manglish
+    question: "Can get my usual medicine again without seeing doctor ah?"
+    expected: [repeat-prescription]
+    tests: '"usual medicine again" vs "repeat prescription"'
+
+  # --- Chinese (Simplified) ---
+  - id: zh-chinese-chat
+    lang: zh
+    question: "可以用中文聊天吗？"
+    expected: [languages]
+    tests: cross-language ("Can I chat in Chinese?")
+
+  - id: zh-talk-to-person
+    lang: zh
+    question: "我想和真人工作人员说话。"
+    expected: [talk-to-staff]
+    tests: cross-language ("I want to talk to a real staff member.")

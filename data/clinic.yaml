@@ -1,0 +1,266 @@
+# Fictional demo data for clinic-agent.
+# Klinik Contoh is not a real clinic. All names, prices and policies are made up.
+# Nothing in this file is medical advice.
+
+clinic:
+  name: Klinik Contoh
+  fictional: true
+  timezone: Asia/Kuala_Lumpur
+  currency: MYR
+
+# Each day is a list of open sessions. Gaps are breaks. [] = closed.
+# Times are quoted on purpose: unquoted 08:30 is parsed by PyYAML as 510.
+hours:
+  weekly:
+    mon: [{open: "08:30", close: "13:00"}, {open: "14:00", close: "21:00"}]
+    tue: [{open: "08:30", close: "13:00"}, {open: "14:00", close: "21:00"}]
+    wed: [{open: "08:30", close: "13:00"}, {open: "14:00", close: "21:00"}]
+    thu: [{open: "08:30", close: "13:00"}, {open: "14:00", close: "21:00"}]
+    fri: [{open: "08:30", close: "12:30"}, {open: "14:45", close: "21:00"}]  # Friday prayers
+    sat: [{open: "08:30", close: "13:00"}]
+    sun: []
+  public_holidays: closed
+
+# Language codes: ms Bahasa Melayu, en English, zh Mandarin,
+# yue Cantonese, nan Hokkien, ta Tamil.
+doctors:
+  - full_name: Dr. Aisyah binti Kamarudin
+    specialty: General Practice
+    languages: [ms, en]
+  - full_name: Dr. Tan Wei Ling
+    specialty: General Practice
+    languages: [en, zh, yue]
+  - full_name: Dr. Rajesh a/l Muthusamy
+    specialty: General Practice
+    languages: [en, ms, ta]
+  - full_name: Dr. Daniel Ong Jia Hao
+    specialty: General Practice
+    languages: [en, ms, zh, nan]
+
+services:
+  # --- Consultations (5) ---
+  - name: General consultation
+    price_myr: 40.00
+    duration_minutes: 15
+    description: A visit with a GP about a new concern. Medicines, tests and procedures are charged separately.
+  - name: Follow-up consultation
+    price_myr: 35.00
+    duration_minutes: 15
+    description: A return visit with a GP about a concern already seen at this clinic.
+  - name: Extended consultation
+    price_myr: 70.00
+    duration_minutes: 30
+    description: A longer GP visit, for when you have several things to discuss.
+  - name: Child consultation (under 12)
+    price_myr: 40.00
+    duration_minutes: 15
+    description: A GP visit for a child under 12. A parent or guardian must come along.
+  - name: Evening consultation
+    price_myr: 50.00
+    duration_minutes: 15
+    description: A GP visit that starts at 6:00pm or later, Monday to Friday.
+
+  # --- Health screenings and medical examinations (8) ---
+  - name: Basic health screening
+    price_myr: 120.00
+    duration_minutes: 30
+    description: Height, weight, blood pressure, a basic blood and urine panel, and a GP review of the report. Staff will tell you at booking if you need to prepare.
+  - name: Comprehensive health screening
+    price_myr: 280.00
+    duration_minutes: 45
+    description: A wider blood panel, a urine test, an ECG and a GP review of the report. Staff will tell you at booking if you need to prepare.
+  - name: Women's health screening
+    price_myr: 180.00
+    duration_minutes: 30
+    description: A screening package for women, with blood and urine tests and a GP review of the report. You can ask for a particular doctor when booking.
+  - name: Men's health screening
+    price_myr: 180.00
+    duration_minutes: 30
+    description: A screening package for men, with blood and urine tests and a GP review of the report.
+  - name: Senior health screening (60 and above)
+    price_myr: 250.00
+    duration_minutes: 45
+    description: A screening package for patients aged 60 and above, with extra time for the GP review.
+  - name: Pre-employment medical examination
+    price_myr: 90.00
+    duration_minutes: 30
+    description: A medical examination for a new job. Bring your employer's form if they gave you one.
+  - name: Driving licence medical examination
+    price_myr: 60.00
+    duration_minutes: 20
+    description: The medical examination some driving licence applications need. Bring the form from the licensing office.
+  - name: Student medical examination
+    price_myr: 50.00
+    duration_minutes: 20
+    description: A medical examination for school, college or university entry. Bring the institution's form if there is one.
+
+  # --- Travel and vaccinations (9) ---
+  - name: Travel health consultation
+    price_myr: 60.00
+    duration_minutes: 20
+    description: A GP visit before a trip to go through the vaccines and documents your destination may ask for. Vaccines are charged separately.
+  - name: Influenza vaccination
+    price_myr: 75.00
+    duration_minutes: 15
+    description: One dose of seasonal flu vaccine. Price includes the vaccine. Subject to stock.
+  - name: Hepatitis A vaccination (per dose)
+    price_myr: 120.00
+    duration_minutes: 15
+    description: One dose of hepatitis A vaccine. Price includes the vaccine. Subject to stock.
+  - name: Hepatitis B vaccination (per dose)
+    price_myr: 60.00
+    duration_minutes: 15
+    description: One dose of hepatitis B vaccine. Price includes the vaccine. Subject to stock.
+  - name: HPV vaccination (per dose)
+    price_myr: 350.00
+    duration_minutes: 15
+    description: One dose of HPV vaccine. Price includes the vaccine. Subject to stock.
+  - name: Tetanus vaccination
+    price_myr: 45.00
+    duration_minutes: 15
+    description: One dose of tetanus vaccine. Price includes the vaccine. Subject to stock.
+  - name: Pneumococcal vaccination
+    price_myr: 250.00
+    duration_minutes: 15
+    description: One dose of pneumococcal vaccine. Price includes the vaccine. Subject to stock.
+  - name: Typhoid vaccination
+    price_myr: 80.00
+    duration_minutes: 15
+    description: One dose of typhoid vaccine. Price includes the vaccine. Subject to stock.
+  - name: Childhood vaccination visit
+    price_myr: 40.00
+    duration_minutes: 15
+    description: A visit for a child's scheduled vaccine. Bring the child's health record book. The vaccine is charged separately and is subject to stock.
+
+  # --- Tests (10) ---
+  - name: Blood pressure check
+    price_myr: 10.00
+    duration_minutes: 10
+    description: A blood pressure reading taken by a nurse. A GP review is not included.
+  - name: Blood glucose test
+    price_myr: 15.00
+    duration_minutes: 10
+    description: A finger-prick blood sugar reading taken by a nurse. A GP review is not included. Staff will tell you at booking if you need to prepare.
+  - name: Full blood count test
+    price_myr: 30.00
+    duration_minutes: 10
+    description: A blood sample taken at the clinic and sent to the lab. Staff will tell you when the report is ready.
+  - name: Cholesterol test (lipid profile)
+    price_myr: 45.00
+    duration_minutes: 10
+    description: A blood sample taken at the clinic and sent to the lab. Staff will tell you at booking if you need to prepare.
+  - name: HbA1c test
+    price_myr: 50.00
+    duration_minutes: 10
+    description: A blood sample taken at the clinic and sent to the lab. Staff will tell you when the report is ready.
+  - name: Kidney function test
+    price_myr: 45.00
+    duration_minutes: 10
+    description: A blood sample taken at the clinic and sent to the lab. Staff will tell you when the report is ready.
+  - name: Liver function test
+    price_myr: 45.00
+    duration_minutes: 10
+    description: A blood sample taken at the clinic and sent to the lab. Staff will tell you when the report is ready.
+  - name: Thyroid function test
+    price_myr: 60.00
+    duration_minutes: 10
+    description: A blood sample taken at the clinic and sent to the lab. Staff will tell you when the report is ready.
+  - name: Urine test (urinalysis)
+    price_myr: 20.00
+    duration_minutes: 10
+    description: A urine sample collected at the clinic and tested. Staff will tell you when the report is ready.
+  - name: Urine pregnancy test
+    price_myr: 20.00
+    duration_minutes: 10
+    description: A urine test done at the clinic. A consultation to discuss it is booked separately.
+
+  # --- Procedures (3) ---
+  - name: ECG (heart tracing)
+    price_myr: 60.00
+    duration_minutes: 20
+    description: A resting ECG recorded at the clinic. A doctor's review is a separate consultation.
+  - name: Wound dressing
+    price_myr: 30.00
+    duration_minutes: 20
+    description: Cleaning and dressing of a wound by a nurse. Dressing materials are included.
+  - name: Stitch removal
+    price_myr: 35.00
+    duration_minutes: 15
+    description: Removal of stitches by a nurse or doctor. Bring any discharge note from where the stitches were put in.
+
+faqs:
+  - id: opening-hours
+    question: What are your opening hours?
+    answer: Monday to Friday 8:30am to 9:00pm, and Saturday 8:30am to 1:00pm. We're closed on Sundays and public holidays. We close for lunch from 1:00pm to 2:00pm, and on Fridays from 12:30pm to 2:45pm.
+  - id: public-holidays
+    question: Are you open on public holidays?
+    answer: No, we're closed on all public holidays. If a holiday date changes after an official announcement, we follow the new date.
+  - id: walk-ins
+    question: Can I walk in without an appointment?
+    answer: Yes. Walk-in patients are seen in order of arrival, and booked patients are seen at their appointment time, so walk-ins may wait longer when it's busy.
+  - id: how-to-book
+    question: How do I book an appointment?
+    answer: Through this chat. Tell me the service and a day that suits you, and I'll show you the available times. You'll fill in your details in a short form before the booking is made.
+  - id: reschedule-cancel
+    question: How do I change or cancel my appointment?
+    answer: Through this chat, up to 2 hours before your appointment. Less than 2 hours before, please ask to speak to our staff.
+  - id: running-late
+    question: What if I'm running late?
+    answer: Please tell us through this chat as soon as you can. If you arrive after your booked time, you may be seen after patients who arrived on time.
+  - id: what-to-bring
+    question: What should I bring to my appointment?
+    answer: Your MyKad or passport, your panel card or company letter if you're using a panel, and any forms you need filled in. You can also bring a list of the medicines you currently take.
+  - id: fees
+    question: How much does a consultation cost?
+    answer: A general consultation is RM40. Medicines, tests and procedures are charged separately. The counter will tell you the total before you pay.
+  - id: service-prices
+    question: Where can I see the prices of other services?
+    answer: Ask me about any service and I'll tell you its price and how long it takes. All prices are in Malaysian Ringgit (RM).
+  - id: payment-methods
+    question: What payment methods do you accept?
+    answer: Cash, debit and credit cards, and DuitNow QR at the counter. We can't take payment through this chat.
+  - id: panels
+    question: Do you accept company panels or insurance?
+    answer: We accept some company panels. Tell me your company or insurer's name and staff will check whether we're on their list. Please bring your panel card or letter. You pay at the counter for anything your panel doesn't cover.
+  - id: medical-certificate
+    question: Can I get a medical certificate (MC)?
+    answer: Only a doctor can issue an MC, and only after a consultation, if the doctor decides one is needed. We can't issue MCs through this chat, and we don't issue backdated MCs.
+  - id: lab-results
+    question: How do I get my lab results?
+    answer: Staff will tell you when to expect them when your test is done. A doctor explains them to you, at a follow-up consultation or however the doctor arranges. This chat can't share or explain lab results.
+  - id: medical-advice
+    question: Can you give me medical advice in this chat?
+    answer: No. I'm a virtual assistant, not a doctor or nurse. I can book you a consultation so a doctor can help. If you think it may be an emergency, call 999 now.
+  - id: emergency
+    question: What should I do in an emergency?
+    answer: Call 999 now. Please don't wait for a reply in this chat.
+  - id: test-preparation
+    question: Do I need to prepare for a blood test or health screening?
+    answer: Some tests need preparation. When you book, staff will tell you what to do for the tests you're having.
+  - id: vaccine-stock
+    question: Do you have the vaccine I need?
+    answer: Vaccines are subject to stock. Tell me which vaccine you're asking about and I'll check whether we offer it. Staff will confirm stock before your appointment.
+  - id: repeat-prescription
+    question: Can I get a repeat prescription without seeing a doctor?
+    answer: No. A doctor needs to see you before giving a prescription. You can book a follow-up consultation through this chat.
+  - id: choose-doctor
+    question: Can I choose my doctor?
+    answer: Yes. Tell me which doctor you'd like and I'll show you that doctor's available times. You can also ask for a doctor who speaks a particular language.
+  - id: languages
+    question: Which languages can I use?
+    answer: This chat works in Bahasa Melayu, English and Chinese. Between them, our doctors speak Bahasa Melayu, English, Mandarin, Cantonese, Hokkien and Tamil.
+  - id: booking-for-others
+    question: Can I book for my child or a family member?
+    answer: Yes. The booking form asks who the appointment is for. Patients under 18 must come with a parent or guardian.
+  - id: parking
+    question: Is there parking?
+    answer: Yes, there's paid public parking near the clinic. Spaces can be limited in the evening.
+  - id: accessibility
+    question: Is the clinic wheelchair accessible?
+    answer: Yes. The clinic is on the ground floor with step-free entry. Tell us when you book if you'd like help when you arrive.
+  - id: personal-data
+    question: How do you use my personal data?
+    answer: We use your details only to manage your appointments and care at this clinic, in line with Malaysia's Personal Data Protection Act 2010. You can ask to access or correct your data through this chat or at the counter.
+  - id: talk-to-staff
+    question: Can I talk to a person?
+    answer: Yes. Ask to speak to staff and I'll pass your message on. Staff reply during opening hours.
